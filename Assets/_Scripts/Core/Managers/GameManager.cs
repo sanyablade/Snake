@@ -4,7 +4,7 @@ public class GameManager : MonoBehaviour {
 	// === Public =====================================================================================================
 	public void Play() {
 		GameBoard.GetInstance.Initialize();
-		WallCtrl.GetInstance.Initialize();
+		StoneCtrl.GetInstance.Initialize();
 		SnakeCtrl.GetInstance.Initialize();
 		InputHelper.GetInstance.Initialize();
 		CameraCtrl.GetInstance.Initialize();
@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
 
 	public void Stop() {
 		GameBoard.GetInstance.Destroy();
-		SnakeCtrl.GetInstance.Destroy();
+		StoneCtrl.GetInstance.Destroy();
 		InputHelper.GetInstance.Destroy();
 		CameraCtrl.GetInstance.Destroy();
 		FoodCtrl.GetInstance.Destroy();

@@ -2,12 +2,12 @@
 using System.Linq;
 using UnityEngine;
 
-public class WallCtrl : MonoBehaviour {
+public class StoneCtrl : MonoBehaviour {
 	// === Public =====================================================================================================
-	public static WallCtrl GetInstance {
+	public static StoneCtrl GetInstance {
 		get {
 			if (_instance == null) {
-				_instance = new GameObject(typeof(WallCtrl).Name).AddComponent<WallCtrl>();
+				_instance = new GameObject(typeof(StoneCtrl).Name).AddComponent<StoneCtrl>();
 			}
 			return _instance;
 		}
@@ -15,42 +15,42 @@ public class WallCtrl : MonoBehaviour {
 
 	public void Initialize() {
 		_data = GameData.GetInstance;
-		GenerateFreePoint();
+		GenerateStone();
 	}
 
 	public void Destroy() {
-		foreach (var wall in _walls) {
+		foreach (var wall in _stones) {
 			wall.View.Destroy();
 		}
-		_walls.Clear();
+		_stones.Clear();
 		_instance = null;
 		Destroy(gameObject);
 	}
 
 	// === Private ====================================================================================================
-	private static WallCtrl _instance;
-	private readonly List<Wall> _walls = new List<Wall>();
+	private static StoneCtrl _instance;
+	private readonly List<Stone> _stones = new List<Stone>();
 	private GameData _data;
 
-	private void GenerateFreePoint() {
+	private void GenerateStone() {
 		for (int i = 0; i < _data.WallCount; i++) {
-			bool isCreatedWall = false;
+			bool isCreatedStone = false;
 			do {
 				var pointX = (int)Random.Range(1, _data.FieldSize.x - 1);
 				var pointY = (int)Random.Range(1, _data.FieldSize.y - 1);
 				var point = new Vector2(pointX, pointY);
-				if (!CheckCollisionWithWall(point)) {
-					var wall = WallManager.GetInstance.CreateWall(point);
-					_walls.Add(wall);
-					_data.AddElement(wall);
-					isCreatedWall = true;
+				if (!CheckCollisionWitStone(point)) {
+					var element = StoneManager.GetInstance.CreateStone(point);
+					_stones.Add(element);
+					_data.AddElement(element);
+					isCreatedStone = true;
 				}
-			} while (!isCreatedWall);
+			} while (!isCreatedStone);
 		}
 	}
 
-	private bool CheckCollisionWithWall(Vector2 point) {
-		return _walls.Any(wall => point.Equals(wall.Position));
+	private bool CheckCollisionWitStone(Vector2 point) {
+		return _stones.Any(stone => point.Equals(stone.Position));
 	}
 }
 

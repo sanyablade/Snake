@@ -152,7 +152,7 @@ public class SnakeCtrl : MonoBehaviour {
 	private void CheckCollisionWithElement() {
 		foreach (var fieldElement in _gameData.Elements) {
 			if (fieldElement.FieldElementType == FieldElementType.Border ||
-				fieldElement.FieldElementType == FieldElementType.Wall ||
+				fieldElement.FieldElementType == FieldElementType.Stone ||
 				fieldElement.FieldElementType == FieldElementType.Body) {
 				if (_headData.NextPosition.Equals(fieldElement.Position)) {
 					fieldElement.DoCollision();

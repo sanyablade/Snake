@@ -49,12 +49,8 @@ public class FoodCtrl : MonoBehaviour {
 
 	private bool CheckCollisionWithElement(Vector2 point) {
 		foreach (var fieldElement in _gameData.Elements) {
-			if (fieldElement.FieldElementType == FieldElementType.Border ||
-				fieldElement.FieldElementType == FieldElementType.Wall ||
-				fieldElement.FieldElementType == FieldElementType.Body) {
-				if (point.Equals(fieldElement.Position)) {
-					return true;
-				}
+			if (point.Equals(fieldElement.Position)) {
+				return true;
 			}
 		}
 		return false;

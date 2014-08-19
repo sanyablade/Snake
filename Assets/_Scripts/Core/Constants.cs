@@ -32,6 +32,14 @@
 				public const string CAMERA_2D = "Prefabs/Camera/Camera2D";
 				public const string CAMERA_3D = "Prefabs/Camera/Camera3D";
 			}
+
+			public static class Stones {
+				public const string STONE_1 = "Prefabs/Stones/Stone1";
+				public const string STONE_2 = "Prefabs/Stones/Stone2";
+				public const string STONE_3 = "Prefabs/Stones/Stone3";
+				public const string STONE_4 = "Prefabs/Stones/Stone4";
+				public const string STONE_5 = "Prefabs/Stones/Stone5";
+			}
 		}
 	}
 }

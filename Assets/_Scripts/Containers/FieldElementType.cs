@@ -1,5 +1,6 @@
 ﻿public enum FieldElementType {
 	Wall,
 	Border,
-	Body
+	Body,
+	Stone
 }
