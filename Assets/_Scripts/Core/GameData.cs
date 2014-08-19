@@ -123,22 +123,22 @@ public class GameData {
 		Elements.Clear();
 		// Left wall
 		for (int y = 0; y < FieldSize.y; y++) {
-			var border = new Border() { Position = new Vector2(-1, y) };
+			var border = new Border(new Vector2(-1, y));
 			AddElement(border);
 		}
 		// Right wall
 		for (int y = (int)FieldSize.y - 1; -1 < y; y--) {
-			var border = new Border() { Position = new Vector2(FieldSize.x, y) };
+			var border = new Border(new Vector2(FieldSize.x, y));
 			AddElement(border);
 		}
 		// Up wall
 		for (int x = 0; x < FieldSize.x; x++) {
-			var border = new Border() { Position = new Vector2(x, FieldSize.y) };
+			var border = new Border(new Vector2(x, FieldSize.y));
 			AddElement(border);
 		}
 		// Down wall
 		for (int x = (int)FieldSize.x - 1; -1 < x; x--) {
-			var border = new Border() { Position = new Vector2(x, -1) };
+			var border = new Border(new Vector2(x, -1));
 			AddElement(border);
 		}
 	}

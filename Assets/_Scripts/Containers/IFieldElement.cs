@@ -2,6 +2,6 @@
 
 public interface IFieldElement {
 	FieldElementType FieldElementType { get; }
-	Vector2 Position { get; set; }
+	Vector2 Position { get; }
 	void DoCollision();
 }

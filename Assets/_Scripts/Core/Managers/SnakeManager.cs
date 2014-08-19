@@ -17,11 +17,15 @@ public class SnakeManager : MonoBehaviour {
 
 	public void CreateSnakeHead() {
 		var snakeHead = GameObjectTools.CreateGameObject(Constants.Resources.Prefabs.SNAKE_HEAD);
-		var bodyView = GameObjectTools.GetComponent<SnakeBodyView>(snakeHead);
+		var snakeBodyView = GameObjectTools.GetComponent<SnakeBodyView>(snakeHead);
+
+		var bodyView = GameObjectTools.GetComponent<BodyView>(snakeHead);
+		var body = new Body(bodyView, new Vector2(0, 0), DirectionSnake.RIGHT);
+
 		var bodyData = new SnakeBodyData(new Vector2(0, 0), DirectionSnake.RIGHT, DirectionSnake.RIGHT);
 		bodyData.StartMove();
-		bodyView.Initialize(bodyData.CurPoint, bodyData.NextPoint);
-		GameData.GetInstance.AddSnakeBody(bodyData, bodyView);
+		snakeBodyView.Initialize(bodyData.CurPoint, bodyData.NextPoint);
+		GameData.GetInstance.AddSnakeBody(bodyData, snakeBodyView);
 	}
 
 	public void CreateSnakeTail() {

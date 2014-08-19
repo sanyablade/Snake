@@ -13,7 +13,7 @@ public class WallManager : MonoBehaviour {
 		var wallGo = GameObjectTools.CreateGameObject(Constants.Resources.Prefabs.WALL);
 		var wallView = GameObjectTools.GetComponent<WallView>(wallGo);
 		wallGo.transform.position = new Vector3(pos.x, 0, pos.y);
-		return new Wall { Position = pos, View = wallView };
+		return new Wall(wallView, pos);
 	}
 
 	// === Private ====================================================================================================
