@@ -1,5 +1,4 @@
 ﻿using System;
-using AnimationOrTween;
 using UnityEngine;
 
 public class Body : IFieldElement {
@@ -8,7 +7,7 @@ public class Body : IFieldElement {
 	public FieldElementType FieldElementType { get { return FieldElementType.Body; } }
 	public Vector2 Position { get; set; }
 	public void DoCollision() {
-		throw new System.NotImplementedException();
+		GameCtrl.GetInstance.Reset();
 	}
 	#endregion
 
@@ -40,7 +39,7 @@ public class Body : IFieldElement {
 		NextDirection = direction;
 	}
 
-	public void UpdatePointAndCurDirection() {
+	public void UpdatePositionAndDirection() {
 		if (_target == null) {
 			Position = NextPosition;
 			NextPosition = GetNextPosition();

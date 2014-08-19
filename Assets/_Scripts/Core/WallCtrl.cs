@@ -29,7 +29,7 @@ public class WallCtrl : MonoBehaviour {
 
 	// === Private ====================================================================================================
 	private static WallCtrl _instance;
-	private List<Wall> _walls = new List<Wall>();
+	private readonly List<Wall> _walls = new List<Wall>();
 	private GameData _data;
 
 	private void GenerateFreePoint() {

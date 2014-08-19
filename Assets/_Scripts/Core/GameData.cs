@@ -6,8 +6,6 @@ public class GameData {
 	// === Public =====================================================================================================
 	public Vector2 FieldSize { get; private set; }
 	public List<IFieldElement> Elements { get; private set; }
-	public List<SnakeBodyData> SnakeBodyDatas { get; private set; }
-	public List<SnakeBodyView> SnakeBodyViews { get; private set; }
 	public float SnakeSpeed { get; private set; }
 	public Vector2 FoodPos { get; private set; }
 	public FoodView FoodView { get; private set; }
@@ -36,17 +34,16 @@ public class GameData {
 		Elements.Add(element);
 	}
 
+	public void RemoveElement(IFieldElement element) {
+		Elements.Remove(element);
+	}
+
 	public void SetCamera(bool isCamera2D) {
 		IsCamera2D = isCamera2D;
 	}
 
 	public void SetWallCount(float value) {
 		WallCount = (int)(value * Constants.MAX_WALLS);
-	}
-
-	public void AddSnakeBody(SnakeBodyData bodyData, SnakeBodyView bodyView) {
-		SnakeBodyDatas.Add(bodyData);
-		SnakeBodyViews.Add(bodyView);
 	}
 
 	public void SetSnakeSpeed(float value) {
@@ -84,8 +81,6 @@ public class GameData {
 	}
 
 	public void ResetLevelData() {
-		SnakeBodyDatas.Clear();
-		SnakeBodyViews.Clear();
 		SnakeSpeed = _startSpeed;
 		FoodPos = new Vector2(-1, -1);
 	}
@@ -106,8 +101,6 @@ public class GameData {
 		const int fieldHeight = 10;
 		FieldSize = new Vector2(fieldWidth, fieldHeight);
 		Elements = new List<IFieldElement>();
-		SnakeBodyDatas = new List<SnakeBodyData>();
-		SnakeBodyViews = new List<SnakeBodyView>();
 		FoodPos = new Vector2(-1, -1);
 
 		_startSpeed = SnakeSpeed = Constants.MIN_SPEED;

@@ -7,18 +7,25 @@ public class BodyView : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (_flag) {
+		_moveTimeRest -= Time.deltaTime;
+		if (_body == null || _body.IsPause) {
 			return;
 		}
 		_transform.position += _transform.forward * GameData.GetInstance.SnakeSpeed * Time.deltaTime;
 	}
 
 	// === Public =====================================================================================================
-	public void RefreshDirection(DirectionSnake direction) {
-		if (_direction.Equals(direction)) {
-			return;
-		}
-		_direction = direction;
+	public void SetBody(Body body) {
+		_body = body;
+	}
+
+	public void RefreshDirection() {
+		var offset = -_moveTimeRest;
+		NormalizePosition();
+		RefreshRotate();
+		RefreshPosition(offset);
+		UpdatePoint();
+		_moveTimeRest -= offset;
 	}
 
 	public void Destroy() {
@@ -27,7 +34,25 @@ public class BodyView : MonoBehaviour {
 
 	// === Private ====================================================================================================
 	private Transform _transform;
-	private DirectionSnake _direction;
-	private bool _flag = true;
+	private Body _body;
+	private float _moveTimeRest;
+
+	private void UpdatePoint() {
+		var pos = new Vector2(_body.Position.x, _body.Position.y);
+		var moveVector = _body.NextPosition - pos;
+		_moveTimeRest = moveVector.magnitude / GameData.GetInstance.SnakeSpeed;
+	}
+
+	private void NormalizePosition() {
+		_transform.position = new Vector3(_body.Position.x, 0, _body.Position.y);
+	}
+
+	private void RefreshRotate() {
+		_transform.LookAt(new Vector3(_body.NextPosition.x, 0, _body.NextPosition.y));
+	}
+
+	private void RefreshPosition(float deltaPosition) {
+		_transform.position += _transform.forward * deltaPosition;
+	}
 }
 

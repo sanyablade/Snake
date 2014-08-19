@@ -1,23 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class SnakeCtrl : MonoBehaviour {
 	// === Unity ======================================================================================================
 	private void Update() {
-		RefreshSnakeBodyViewPosition(_gameData.SnakeSpeed * Time.deltaTime);
 		UpdateDirection();
 
+		CheckCollisionWithElement();
 		CheckCollisionWithFood();
-		CheckCollisionWithBody();
-		CheckCollisionWithWall();
 	}
 
 	// === Public =====================================================================================================
 	public static SnakeCtrl GetInstance {
 		get {
 			if (_instance == null) {
-				_instance = new GameObject("SnakeCtrl").AddComponent<SnakeCtrl>();
+				_instance = new GameObject(typeof(SnakeCtrl).Name).AddComponent<SnakeCtrl>();
 			}
 			return _instance;
 		}
@@ -25,9 +24,13 @@ public class SnakeCtrl : MonoBehaviour {
 
 	public void Initialize() {
 		_gameData = GameData.GetInstance;
-		_headData = _gameData.SnakeBodyDatas.First();
+		CreateHead();
+		CreateTail();
 		UpdatePoint();
-		UpdateRotation();
+	}
+
+	public List<Body> GetBodies() {
+		return _bodies;
 	}
 
 	public void SetNextDirection(DirectionSnake direction) {
@@ -48,7 +51,7 @@ public class SnakeCtrl : MonoBehaviour {
 			}
 		} else {
 			if (newDirection == DirectionSnake.LEFT) {
-				switch (_headData.CurDirection) {
+				switch (_headData.Direction) {
 					case DirectionSnake.LEFT:
 						_headData.SetNextDirection(DirectionSnake.DOWN);
 						break;
@@ -65,7 +68,7 @@ public class SnakeCtrl : MonoBehaviour {
 						throw new Exception("wtf");
 				}
 			} else if (newDirection == DirectionSnake.RIGHT) {
-				switch (_headData.CurDirection) {
+				switch (_headData.Direction) {
 					case DirectionSnake.LEFT:
 						_headData.SetNextDirection(DirectionSnake.UP);
 						break;
@@ -86,30 +89,43 @@ public class SnakeCtrl : MonoBehaviour {
 	}
 
 	public void Destroy() {
-		foreach (var snakeBodyView in GameData.GetInstance.SnakeBodyViews) {
-			snakeBodyView.Destroy();
+		foreach (var body in _bodies) {
+			body.View.Destroy();
+			_gameData.RemoveElement(body);
 		}
+		_bodies.Clear();
 		_instance = null;
 		Destroy(gameObject);
 	}
 
 	// === Private ====================================================================================================
 	private static SnakeCtrl _instance;
+	private readonly List<Body> _bodies = new List<Body>();
 	private GameData _gameData;
-	private SnakeBodyData _headData;
+	private Body _headData;
 	private float _moveTimeRest;
 
-	private void UpdatePoint() {
-		var curPos = new Vector2(_headData.CurPoint.x, _headData.CurPoint.y);
-		var moveVector = _headData.NextPoint - curPos;
-		_moveTimeRest = moveVector.magnitude / _gameData.SnakeSpeed;
+	private void CreateHead() {
+		var body = SnakeManager.GetInstance.CreateSnakeHead();
+		body.View.SetBody(body);
+		body.View.RefreshDirection();
+		_bodies.Add(body);
+		_gameData.AddElement(body);
+		_headData = body;
 	}
 
-	private void UpdateRotation() {
-		for (int i = 0; i < _gameData.SnakeBodyViews.Count; i++) {
-			var nextPoint = _gameData.SnakeBodyDatas[i].NextPoint;
-			_gameData.SnakeBodyViews[i].SetNextPoint(nextPoint);
-		}
+	private void CreateTail() {
+		var body = SnakeManager.GetInstance.CreateSnakeTail(_bodies.Last());
+		body.View.SetBody(body);
+		body.View.RefreshDirection();
+		_bodies.Add(body);
+		_gameData.AddElement(body);
+	}
+
+	private void UpdatePoint() {
+		var pos = new Vector2(_headData.Position.x, _headData.Position.y);
+		var moveVector = _headData.NextPosition - pos;
+		_moveTimeRest = moveVector.magnitude / _gameData.SnakeSpeed;
 	}
 
 	private void UpdateDirection() {
@@ -119,94 +135,42 @@ public class SnakeCtrl : MonoBehaviour {
 		}
 
 		var offset = -_moveTimeRest;
-		NormalizeSnakeBodyView();
-		UpdatePointAndCurDirSnakeBodyView();
-		UpdateNextDirectionForSnakeTail();
 		UpdatePoint();
-		UpdateRotation();
-		RefreshSnakeBodyViewPosition(offset);
 		_moveTimeRest -= offset;
-	}
 
-	private void RefreshSnakeBodyViewPosition(float deltaPosition) {
-		for (int i = 0; i < _gameData.SnakeBodyViews.Count; i++) {
-			if (_gameData.SnakeBodyDatas[i].IsPause) {
+		foreach (var body in _bodies) {
+			if (body.IsPause) {
+				body.StartMove();
+				body.View.RefreshDirection();
 				continue;
 			}
-			_gameData.SnakeBodyViews[i].RefreshPosition(deltaPosition);
+			body.UpdatePositionAndDirection();
+			body.View.RefreshDirection();
 		}
 	}
 
-	private void NormalizeSnakeBodyView() {
-		for (int i = 0; i < _gameData.SnakeBodyViews.Count; i++) {
-			if (_gameData.SnakeBodyDatas[i].IsPause) {
-				continue;
+	private void CheckCollisionWithElement() {
+		foreach (var fieldElement in _gameData.Elements) {
+			if (fieldElement.FieldElementType == FieldElementType.Border ||
+				fieldElement.FieldElementType == FieldElementType.Wall ||
+				fieldElement.FieldElementType == FieldElementType.Body) {
+				if (_headData.NextPosition.Equals(fieldElement.Position)) {
+					fieldElement.DoCollision();
+					return;
+				}
 			}
-			var endPoint = _gameData.SnakeBodyDatas[i].NextPoint;
-			_gameData.SnakeBodyViews[i].NormalizePosition(endPoint);
-		}
-	}
-
-	private void UpdatePointAndCurDirSnakeBodyView() {
-		foreach (var snakeBodyData in _gameData.SnakeBodyDatas) {
-			if (snakeBodyData.IsPause) {
-				continue;
-			}
-			snakeBodyData.UpdatePointAndCurDirection();
-		}
-	}
-
-	private void UpdateNextDirectionForSnakeTail() {
-		for (int i = 1; i < _gameData.SnakeBodyDatas.Count; i++) {
-			if (_gameData.SnakeBodyDatas[i].IsPause) {
-				_gameData.SnakeBodyDatas[i].StartMove();
-			}
-			var nextDir = _gameData.SnakeBodyDatas[i - 1].CurDirection;
-			_gameData.SnakeBodyDatas[i].SetNextDirection(nextDir);
 		}
 	}
 
 	private void CheckCollisionWithFood() {
-		if (_headData.CurPoint.Equals(_gameData.FoodPos)) {
+		if (_headData.Position.Equals(_gameData.FoodPos)) {
 			if (_gameData.FoodView != null) {
 				_gameData.FoodView.Destroy();
 			}
 			_gameData.IncreaseScore(Constants.FOOD_POINTS);
 			_gameData.DeleteFood();
 			_gameData.IncreaseSnakeSpeed(Constants.POWER_SPEED);
-			SnakeManager.GetInstance.CreateSnakeTail();
-		}
-	}
-
-	private void CheckCollisionWithWall() {
-		const float halfCell = Constants.CELL_LENGTH_HALF;
-		if (_moveTimeRest > halfCell) {
-			return;
-		}
-
-		foreach (var fieldElement in _gameData.Elements) {
-			if (fieldElement.FieldElementType == FieldElementType.Border ||
-				fieldElement.FieldElementType == FieldElementType.Wall) {
-				if (_headData.NextPoint.Equals(fieldElement.Position)) {
-					fieldElement.DoCollision();
-				}
-			}
-		}
-	}
-
-	private void CheckCollisionWithBody() {
-		const float halfCell = Constants.CELL_LENGTH_HALF;
-		if (_moveTimeRest > halfCell) {
-			return;
-		}
-		for (int i = 1; i < _gameData.SnakeBodyDatas.Count; i++) {
-			if (_gameData.SnakeBodyDatas[i].IsPause) {
-				continue;
-			}
-			if (_headData.NextPoint.Equals(_gameData.SnakeBodyDatas[i].NextPoint)) {
-				GameCtrl.GetInstance.Reset();
-				return;
-			}
+			CreateTail();
 		}
 	}
 }

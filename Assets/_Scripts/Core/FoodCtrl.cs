@@ -4,7 +4,7 @@ using UnityEngine;
 public class FoodCtrl : MonoBehaviour {
 	// === Unity ======================================================================================================
 	private void Update() {
-		if (_data.FoodPos.Equals(new Vector2(-1, -1)) || !_data.FoodView) {
+		if (_gameData.FoodPos.Equals(new Vector2(-1, -1)) || !_gameData.FoodView) {
 			GenerateFood();
 		}
 	}
@@ -20,7 +20,7 @@ public class FoodCtrl : MonoBehaviour {
 	}
 
 	public void Initialize() {
-		_data = GameData.GetInstance;
+		_gameData = GameData.GetInstance;
 		GenerateFood();
 	}
 
@@ -35,33 +35,23 @@ public class FoodCtrl : MonoBehaviour {
 
 	// === Private ====================================================================================================
 	private static FoodCtrl _instance;
-	private GameData _data;
+	private GameData _gameData;
 
 	private void GenerateFood() {
-		var pointX = (int)Random.Range(0, _data.FieldSize.x - 1);
-		var pointY = (int)Random.Range(0, _data.FieldSize.y - 1);
+		var pointX = (int)Random.Range(0, _gameData.FieldSize.x - 1);
+		var pointY = (int)Random.Range(0, _gameData.FieldSize.y - 1);
 		var point = new Vector2(pointX, pointY);
-		if (CheckCollisionWithBody(point) || CheckCollisionWithWall(point)) {
+		if (CheckCollisionWithElement(point)) {
 			return;
 		}
 		FoodManager.GetInstance.CreateFood(point);
 	}
 
-	private bool CheckCollisionWithBody(Vector2 point) {
-		if (point.Equals(_data.SnakeBodyDatas.First().NextPoint)) {
-			return true;
-		}
-		foreach (var snakeBodyData in _data.SnakeBodyDatas) {
-			if (point.Equals(snakeBodyData.CurPoint)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private bool CheckCollisionWithWall(Vector2 point) {
-		foreach (var fieldElement in _data.Elements) {
-			if (fieldElement.FieldElementType == FieldElementType.Wall) {
+	private bool CheckCollisionWithElement(Vector2 point) {
+		foreach (var fieldElement in _gameData.Elements) {
+			if (fieldElement.FieldElementType == FieldElementType.Border ||
+				fieldElement.FieldElementType == FieldElementType.Wall ||
+				fieldElement.FieldElementType == FieldElementType.Body) {
 				if (point.Equals(fieldElement.Position)) {
 					return true;
 				}

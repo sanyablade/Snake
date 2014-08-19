@@ -5,7 +5,6 @@ public class GameManager : MonoBehaviour {
 	public void Play() {
 		GameBoard.GetInstance.Initialize();
 		WallCtrl.GetInstance.Initialize();
-		SnakeManager.GetInstance.Initialize();
 		SnakeCtrl.GetInstance.Initialize();
 		InputHelper.GetInstance.Initialize();
 		CameraCtrl.GetInstance.Initialize();

@@ -31,7 +31,7 @@ public class CameraCtrl : MonoBehaviour {
 		if (!_data.IsCamera2D) {
 			_view = _manager.GetCamera3D().GetComponent<CameraView>();
 			if (_view != null) {
-				_view.SetTarget(_data.SnakeBodyViews.First().transform);
+				_view.SetTarget(SnakeCtrl.GetInstance.GetBodies().First().View.transform);
 			}
 		} else {
 			SetCamera2DSize();

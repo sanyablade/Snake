@@ -21,7 +21,6 @@ public class GameCtrl : MonoBehaviour {
 		GameData.GetInstance.ResetLevelData();
 
 		if (GameData.GetInstance.Life > 0) {
-			SnakeManager.GetInstance.Initialize();
 			SnakeCtrl.GetInstance.Initialize();
 			InputHelper.GetInstance.Initialize();
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public class SnakeLengthLabel : MonoBehaviour {
 	// === Unity ======================================================================================================
@@ -19,7 +20,7 @@ public class SnakeLengthLabel : MonoBehaviour {
 	private int _snakeLength;
 
 	private void RefreshLabelText() {
-		var snakeLengthNew = _gameData.SnakeBodyDatas.Count;
+		var snakeLengthNew = _gameData.Elements.Count(fieldElement => fieldElement.FieldElementType == FieldElementType.Body);
 		if (_snakeLength != snakeLengthNew) {
 			_snakeLength = snakeLengthNew;
 			Label.text = SNAKE_LENGTH + _snakeLength;
