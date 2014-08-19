@@ -1,16 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraManager : MonoBehaviour {
-	// === Public =====================================================================================================
-	public static CameraManager GetInstance {
-		get {
-			if (_instance == null) {
-				_instance = new GameObject(typeof(CameraManager).Name).AddComponent<CameraManager>();
-			}
-			return _instance;
-		}
+	// === Unity ======================================================================================================
+	public void Awake() {
+		_instance = this;
 	}
+
+	// === Public =====================================================================================================
+	public static CameraManager GetInstance { get { return _instance; } }
 
 	public void Initialize() {
 		DestroyAllCameras();
@@ -52,31 +49,11 @@ public class CameraManager : MonoBehaviour {
 	private GameObject _camera3D;
 
 	private void CreateCamera2D() {
-		_camera2D = CreateGameObject(GetCamera2DPrefab());
+		_camera2D = GameObjectTools.CreateGameObject(Constants.Resources.Prefabs.Camera.CAMERA_2D);
 	}
 
 	private void CreateCamera3D() {
-		_camera3D = CreateGameObject(GetCamera3DPrefab());
-	}
-
-	private GameObject GetCamera2DPrefab() {
-		return GetPrefabFromResources(Constants.Resources.Prefabs.Camera.CAMERA_2D);
-	}
-
-	private GameObject GetCamera3DPrefab() {
-		return GetPrefabFromResources(Constants.Resources.Prefabs.Camera.CAMERA_3D);
-	}
-
-	private GameObject GetPrefabFromResources(string namePrefab) {
-		var prefab = Resources.Load(namePrefab) as GameObject;
-		if (prefab == null) {
-			throw new ArgumentNullException(namePrefab);
-		}
-		return prefab;
-	}
-
-	private GameObject CreateGameObject(GameObject prefab) {
-		return Instantiate(prefab) as GameObject;
+		_camera3D = GameObjectTools.CreateGameObject(Constants.Resources.Prefabs.Camera.CAMERA_3D);
 	}
 
 	private void DestroyGameObject(GameObject _camera) {
